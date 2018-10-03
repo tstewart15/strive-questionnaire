@@ -31,7 +31,11 @@ class App {
     MAIN.innerHTML = '';
     MAIN.appendChild(this.pages[this.currentPageIndex].node);
     if (this.currentPageIndex == this.pages.length - 1) {
-      this.validateAndSubmitResponse()
+      clearInterval(this.clearIntervalId);
+      this.validateAndSubmitResponse();
+    }
+    else {
+      this.clearIntervalId = restartQuestionTimer(this.clearIntervalId);
     }
     this.currentPageIndex++;
   }
@@ -68,7 +72,9 @@ class Page {
 function createQuestionHtmlString(index) {
   const node = document.importNode(QUESTION_TEMPLATE.content, true);
   const label = node.querySelector('label');
-  label.innerHTML = `${index+1}. ${QUESTIONS[index]}`;
+  label.innerHTML = QUESTIONS[index];
+  const questionNumber = node.getElementById('question-number');
+  questionNumber.textContent = `Question ${index+1} of ${QUESTIONS.length}`
   const submitButton = node.querySelector('button');
   submitButton.addEventListener('click', onProceedClick);
   return node;
@@ -82,13 +88,34 @@ function createFinalHtmlString() {
 function onProceedClick() {
   const responseTextarea = document.getElementById('response');
   const responseValue = responseTextarea.value;
-  if (responseValue.length > 0) {
-    APP.appendResponse(responseValue)
-    APP.goToNextPage();
+  APP.appendResponse(responseValue)
+  APP.goToNextPage();
+}
+
+function restartQuestionTimer(clearIntervalId) {
+  if (clearIntervalId) clearInterval(clearIntervalId);
+  const timerIntervalDuration = 1000;
+  const start = new Date();
+  const threeMinutesFromStart = new Date(start.getTime() + 3*60*1000 + timerIntervalDuration/2);
+  const timer = document.getElementById('timer');
+
+  function questionTimerInterval() {
+    const now = new Date();
+    const timeLeft = threeMinutesFromStart - now;
+    if (timeLeft <= 0) {
+      APP.goToNextPage();
+    }
+    else {
+      const minutes = Math.floor((timeLeft / 1000 / 60) % 60);
+      const seconds = Math.floor((timeLeft / 1000) % 60);
+      const minutesStr = minutes.toString();
+      const secondsStr = ('0'+seconds).slice(-2);
+      timer.textContent = `${minutesStr}:${secondsStr}`;
+    }
   }
-  else {
-    // Report error
-  }
+
+  questionTimerInterval();
+  return setInterval(questionTimerInterval, timerIntervalDuration);
 }
 
 const PAGES = [

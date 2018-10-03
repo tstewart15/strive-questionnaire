@@ -22,6 +22,12 @@
 			padding: 60px 20px;
 			max-width: 475px;
 			margin: auto;
+			position: relative;
+		}
+		.question-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
 		}
 		.response-textarea {
 			height: 300px;
@@ -39,6 +45,10 @@
 		</div>
 	</main>
 	<template id='question-template'>
+		<div class="question-header">
+			<p id="question-number"></p>
+			<div id="timer"></div>
+		</div>
 		<label for='response'></label>
 		<textarea autofocus id="response" class='response-textarea' required></textarea>
 		<button>Submit</button>
