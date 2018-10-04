@@ -8,7 +8,6 @@ Strive coding challenge
 - Node version: 8.9.3
 
 ## Incomplete due to time constraints
-- Timer...
 - Full email address validation using regex
 - More user input error feedback
 - Allow typical form keyboard controls in UI (e.g. Enter to submit/advance)
